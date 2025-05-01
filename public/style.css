@@ -1,0 +1,42 @@
+/* --------------------------------------------------------
+   Glassmorphism カード
+-------------------------------------------------------- */
+.glass {
+    /* ぼかし＋半透明ホワイト */
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.30);
+    /* 枠線 & 角丸 & 影 */
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 1rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.10);
+}
+
+/* --------------------------------------------------------
+     Neumorphic ボタン
+  -------------------------------------------------------- */
+.neo-btn {
+    /* Tailwind の @apply 相当を手書き */
+    background: rgba(255, 255, 255, 0.80);
+    color: #1e293b;
+    /* slate-900 */
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    /* py-2 px-4 */
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.07),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.6);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.neo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* --------------------------------------------------------
+     スクロールバー非表示（コードエディタ内など）
+  -------------------------------------------------------- */
+::-webkit-scrollbar {
+    display: none;
+}

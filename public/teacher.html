@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Tailwind & GSAP -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200 p-6">
+    <div class="glass max-w-4xl mx-auto p-8 space-y-10">
+
+        <h1 class="text-3xl font-bold text-center">Teacher Dashboard</h1>
+
+        <!-- Groups -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-2">Groups</h2>
+            <ul id="group-list" class="space-y-1 mb-3"></ul>
+            <form id="group-form" class="flex gap-2">
+                <input id="group-name" class="flex-1 px-3 py-2 rounded-lg bg-white/70" placeholder="New group name"
+                    required>
+                <button class="neo-btn px-4">Add</button>
+            </form>
+        </section>
+
+        <!-- Assignments -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-2">Assignments</h2>
+
+            <!-- Filter -->
+            <div class="mb-4">
+                <label class="mr-2 font-medium" for="group-filter">Filter by group:</label>
+                <select id="group-filter" class="px-2 py-1 rounded bg-white/70"></select>
+            </div>
+
+            <ul id="assignment-list" class="space-y-1 mb-6"></ul>
+
+            <!-- Create assignment -->
+            <form id="assignment-form" class="space-y-4">
+                <h3 class="text-xl font-semibold">Create New Assignment</h3>
+                <input id="assign-title" class="w-full px-3 py-2 rounded-lg bg-white/70" placeholder="Title" required>
+                <textarea id="assign-desc" class="w-full px-3 py-2 rounded-lg bg-white/70"
+                    placeholder="Description"></textarea>
+
+                <label class="font-medium" for="assign-group">Target group:</label>
+                <select id="assign-group" class="px-2 py-1 rounded bg-white/70 mb-2"></select>
+
+                <!-- Text test cases -->
+                <div id="testcases" class="space-y-2">
+                    <h4 class="font-semibold">Text Test Cases</h4>
+                    <div class="testcase flex gap-2">
+                        <textarea class="test-input flex-1 px-2 py-1 rounded bg-white/70"
+                            placeholder="Input"></textarea>
+                        <textarea class="test-output flex-1 px-2 py-1 rounded bg-white/70"
+                            placeholder="Expected output"></textarea>
+                    </div>
+                </div>
+                <button type="button" id="add-testcase" class="neo-btn">+ Add text case</button>
+
+                <!-- File test case -->
+                <h4 class="font-semibold mt-4">File Test Case (optional)</h4>
+                <div class="space-y-2">
+                    <input type="file" id="inputFile" class="block">
+                    <input type="file" id="outputFile" class="block">
+                </div>
+
+                <button class="neo-btn px-6 py-2">Create</button>
+            </form>
+        </section>
+
+        <!-- Students -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-2">Students</h2>
+            <ul id="student-list" class="space-y-1 mb-3"></ul>
+            <form id="student-form" class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <input id="student-username" class="px-3 py-2 rounded-lg bg-white/70" placeholder="Username" required>
+                <input id="student-password" class="px-3 py-2 rounded-lg bg-white/70" placeholder="Temp password"
+                    required>
+                <select id="student-group" class="px-2 py-1 rounded bg-white/70"></select>
+                <button class="neo-btn md:col-span-3">Add student</button>
+            </form>
+        </section>
+    </div>
+
+    <script src="teacher.js"></script>
+</body>
+
+</html>

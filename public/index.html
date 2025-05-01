@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+
+<body
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200">
+    <div class="glass w-full max-w-md p-8 shadow-lg">
+        <h1 class="text-3xl font-bold text-center mb-6">Classroom App</h1>
+        <form id="login-form" class="space-y-4">
+            <input id="username" class="w-full px-3 py-2 rounded-lg bg-white/70 placeholder-slate-600"
+                placeholder="ユーザー名" required>
+            <input id="password" type="password" class="w-full px-3 py-2 rounded-lg bg-white/70 placeholder-slate-600"
+                placeholder="パスワード" required>
+            <button type="submit" class="neo-btn w-full py-2 rounded-lg bg-white/80 font-semibold">ログイン</button>
+        </form>
+        <p id="login-error" class="text-red-600 mt-4 text-center hidden"></p>
+    </div>
+    <script src="login.js"></script>
+</body>
+
+</html>

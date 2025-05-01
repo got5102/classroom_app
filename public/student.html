@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200 p-6">
+    <div class="glass max-w-3xl mx-auto p-8 space-y-10">
+        <h1 class="text-3xl font-bold text-center">Student Dashboard</h1>
+
+        <section>
+            <h2 class="text-2xl font-semibold mb-2">Assignments</h2>
+            <ul id="assignment-list-student" class="space-y-1"></ul>
+        </section>
+
+        <section id="submission-panel" class="hidden space-y-4">
+            <h2 id="submit-assignment-title" class="text-xl font-semibold"></h2>
+            <p id="submit-assignment-desc"></p>
+            <form id="submit-form" class="space-y-4">
+                <div>
+                    <label class="font-medium mr-2" for="code-lang">Language:</label>
+                    <select id="code-lang" class="px-2 py-1 rounded bg-white/70">
+                        <option value="python">Python</option>
+                        <option value="c">C</option>
+                        <option value="cpp">C++</option>
+                    </select>
+                </div>
+                <textarea id="code-editor" class="w-full h-52 px-3 py-2 rounded-lg bg-white/70 font-mono"
+                    placeholder="Write your code here"></textarea>
+                <button class="neo-btn px-6 py-2">Submit</button>
+            </form>
+            <div id="submission-result" class="font-semibold"></div>
+        </section>
+    </div>
+
+    <script src="student.js"></script>
+</body>
+
+</html>
