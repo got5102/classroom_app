@@ -12,6 +12,9 @@ const upload = multer({ dest: path.join(__dirname, 'uploads') });
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.get('/healthz', (_req, res) => {
+    res.status(200).send('OK');
+});
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const SALT_ROUNDS = 10;
@@ -116,4 +119,5 @@ app.post('/submit', auth('student'), async (req, res) => {
     res.json(result);
 });
 
-app.listen(3000, () => console.log('listening 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`listening on ${PORT}`));
