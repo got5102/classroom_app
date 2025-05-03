@@ -4,8 +4,8 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const db = require('./db');
-const runCode = require('./runCode');
+const db = require('./db.js');
+const runCode = require('./runCode.js');
 
 // 環境変数
 const PORT = process.env.PORT || 3000;
