@@ -2,42 +2,62 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.4/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <!-- :contentReference[oaicite:0]{index=0} -->
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200 p-6">
-    <div class="glass max-w-3xl mx-auto p-8 space-y-10">
-        <h1 class="text-3xl font-bold text-center">Student Dashboard</h1>
+<body class="bg-slate-100 min-h-screen flex">
 
-        <section>
-            <h2 class="text-2xl font-semibold mb-2">Assignments</h2>
-            <ul id="assignment-list-student" class="space-y-1"></ul>
+    <!-- Sidebar -->
+    <aside class="w-56 bg-white shadow-lg fixed h-screen flex flex-col">
+        <div class="p-6 text-xl font-bold border-b">Student</div>
+        <nav class="flex-1 overflow-y-auto p-4">
+            <button id="nav-home" class="nav-btn active w-full">課題ダッシュボード</button>
+        </nav>
+        <button id="logout" class="neo-btn m-4">Logout</button>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 ml-56 p-8 space-y-8">
+        <!-- 課題一覧 -->
+        <section id="page-home" class="space-y-6">
+            <h2 class="text-2xl font-semibold">課題一覧</h2>
+            <ul id="assign-list" class="grid md:grid-cols-2 gap-4"></ul>
         </section>
 
-        <section id="submission-panel" class="hidden space-y-4">
-            <h2 id="submit-assignment-title" class="text-xl font-semibold"></h2>
-            <p id="submit-assignment-desc"></p>
+        <!-- 課題詳細 -->
+        <section id="page-detail" class="hidden space-y-6">
+            <div class="flex items-center gap-4">
+                <button id="back-home" class="neo-btn px-3">&larr;</button>
+                <h2 id="detail-title" class="text-2xl font-semibold"></h2>
+            </div>
+            <p id="detail-desc"></p>
+
+            <!-- エディタ -->
             <form id="submit-form" class="space-y-4">
-                <div>
-                    <label class="font-medium mr-2" for="code-lang">Language:</label>
-                    <select id="code-lang" class="px-2 py-1 rounded bg-white/70">
-                        <option value="python">Python</option>
-                        <option value="c">C</option>
-                        <option value="cpp">C++</option>
-                    </select>
-                </div>
-                <textarea id="code-editor" class="w-full h-52 px-3 py-2 rounded-lg bg-white/70 font-mono"
-                    placeholder="Write your code here"></textarea>
-                <button class="neo-btn px-6 py-2">Submit</button>
+                <select id="code-lang" class="input-field w-40">
+                    <option value="python">Python</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                </select>
+                <textarea id="code-editor" class="input-field w-full h-56 font-mono"
+                    placeholder="ここにコードを書いてください"></textarea>
+                <button class="neo-btn px-6 py-2">提出</button>
             </form>
-            <div id="submission-result" class="font-semibold"></div>
+
+            <!-- 結果 -->
+            <div id="result-box" class="space-y-2 hidden">
+                <p id="result-msg" class="font-semibold"></p>
+                <pre id="result-output" class="bg-white p-3 rounded-lg whitespace-pre-wrap"></pre>
+            </div>
         </section>
-    </div>
+    </main>
 
     <script src="student.js"></script>
 </body>
