@@ -4,28 +4,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classroom App – Login</title>
+    <title>Classroom Login</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 </head>
 
-<body
-    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-300 via-purple-300 to-pink-300">
-    <!-- glass card -->
-    <div class="glass w-full max-w-sm p-8 shadow-lg flex flex-col items-center">
-        <h1 class="text-3xl font-bold text-center mb-6">Classroom&nbsp;App</h1>
-
-        <form id="login-form" class="w-full flex flex-col items-center gap-3">
-            <input id="username" class="input-field w-full" placeholder="ユーザー名" autocomplete="username" required>
-            <input id="password" type="password" class="input-field w-full" placeholder="パスワード"
-                autocomplete="current-password" required>
-            <button class="neo-btn w-40">ログイン</button>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200">
+    <div class="glass w-full max-w-md p-8 shadow-lg">
+        <div class="flex justify-center mb-6">
+            <div class="bg-white/60 p-3 rounded-full w-16 h-16 flex items-center justify-center">
+                <i class="fas fa-graduation-cap text-3xl text-indigo-600"></i>
+            </div>
+        </div>
+        <h1 class="text-3xl font-bold text-center mb-6">Classroom App</h1>
+        <form id="login-form" class="space-y-4">
+            <div class="relative">
+                <span class="absolute left-3 top-2.5 text-gray-500">
+                    <i class="fas fa-user"></i>
+                </span>
+                <input id="username" class="w-full pl-10 pr-3 py-2 rounded-lg bg-white/70 placeholder-slate-600"
+                    placeholder="ユーザー名" required>
+            </div>
+            <div class="relative">
+                <span class="absolute left-3 top-2.5 text-gray-500">
+                    <i class="fas fa-lock"></i>
+                </span>
+                <input id="password" type="password" class="w-full pl-10 pr-3 py-2 rounded-lg bg-white/70 placeholder-slate-600"
+                    placeholder="パスワード" required>
+            </div>
+            <button type="submit" class="neo-btn w-full py-2 rounded-lg bg-white/80 font-semibold">
+                <i class="fas fa-sign-in-alt mr-2"></i>ログイン
+            </button>
         </form>
-
         <p id="login-error" class="text-red-600 mt-4 text-center hidden"></p>
+        <div class="mt-6 text-center text-sm text-gray-600">
+            <button id="theme-toggle" class="neo-btn-sm">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
     </div>
-
     <script src="login.js"></script>
 </body>
 
