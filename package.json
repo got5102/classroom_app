@@ -1,7 +1,7 @@
  {
    "name": "classroom-app",
    "version": "1.0.0",
-+  "type": "module",
+   "type": "module",
    "description": "Small classroom code judge",
    "main": "server.js",
    "scripts": {
