@@ -1,10 +1,17 @@
-const { Pool } = require('pg');
+// db.js
+import { Pool } from 'pg';
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }   // Supabase / Neon 用
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
-module.exports = {
-    query: (text, params) => pool.query(text, params)
-};
+/**
+ * SQL クエリを実行します。
+ * @param {string} text - SQL テキスト
+ * @param {any[]} params - パラメータ配列
+ * @returns {Promise<import('pg').QueryResult<any>>}
+ */
+export async function query(text, params) {
+  return pool.query(text, params);
+}
