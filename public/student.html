@@ -2,62 +2,105 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
     <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-    <!-- :contentReference[oaicite:0]{index=0} -->
 </head>
 
-<body class="bg-slate-100 min-h-screen flex">
-
-    <!-- Sidebar -->
-    <aside class="w-56 bg-white shadow-lg fixed h-screen flex flex-col">
-        <div class="p-6 text-xl font-bold border-b">Student</div>
-        <nav class="flex-1 overflow-y-auto p-4">
-            <button id="nav-home" class="nav-btn active w-full">課題ダッシュボード</button>
+<body class="min-h-screen bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-200 p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- ナビゲーションバー -->
+        <nav class="glass mb-8 p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Student Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <span id="student-name" class="text-sm text-slate-700"></span>
+                <button id="theme-toggle" class="neo-btn-sm"><i class="fas fa-moon"></i></button>
+                <button id="logout-btn" class="neo-btn-sm"><i class="fas fa-sign-out-alt mr-2"></i>ログアウト</button>
+            </div>
         </nav>
-        <button id="logout" class="neo-btn m-4">Logout</button>
-    </aside>
 
-    <!-- Main -->
-    <main class="flex-1 ml-56 p-8 space-y-8">
-        <!-- 課題一覧 -->
-        <section id="page-home" class="space-y-6">
-            <h2 class="text-2xl font-semibold">課題一覧</h2>
-            <ul id="assign-list" class="grid md:grid-cols-2 gap-4"></ul>
-        </section>
-
-        <!-- 課題詳細 -->
-        <section id="page-detail" class="hidden space-y-6">
-            <div class="flex items-center gap-4">
-                <button id="back-home" class="neo-btn px-3">&larr;</button>
-                <h2 id="detail-title" class="text-2xl font-semibold"></h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- サイドバー -->
+            <div class="glass p-6 md:col-span-1">
+                <h2 class="text-xl font-semibold mb-4">課題一覧</h2>
+                <div class="space-y-1">
+                    <ul id="assignment-list-student" class="space-y-2 max-h-96 overflow-y-auto"></ul>
+                </div>
             </div>
-            <p id="detail-desc"></p>
 
-            <!-- エディタ -->
-            <form id="submit-form" class="space-y-4">
-                <select id="code-lang" class="input-field w-40">
-                    <option value="python">Python</option>
-                    <option value="c">C</option>
-                    <option value="cpp">C++</option>
-                </select>
-                <textarea id="code-editor" class="input-field w-full h-56 font-mono"
-                    placeholder="ここにコードを書いてください"></textarea>
-                <button class="neo-btn px-6 py-2">提出</button>
-            </form>
+            <!-- メインコンテンツ -->
+            <div class="glass p-6 md:col-span-2">
+                <!-- 提出パネル -->
+                <div id="submission-panel" class="hidden space-y-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 id="submit-assignment-title" class="text-xl font-semibold"></h2>
+                        <div class="flex space-x-2">
+                            <span id="assignment-status" class="badge"></span>
+                        </div>
+                    </div>
+                    <p id="submit-assignment-desc" class="mb-4 text-slate-700"></p>
+                    
+                    <form id="submit-form" class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <label class="font-medium" for="code-lang">プログラミング言語:</label>
+                            <select id="code-lang" class="px-3 py-2 rounded-lg bg-white/70">
+                                <option value="python">Python</option>
+                                <option value="c">C</option>
+                                <option value="cpp">C++</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="font-medium block mb-2" for="code-editor">コード:</label>
+                            <textarea id="code-editor" class="w-full h-64 px-3 py-2 rounded-lg bg-white/70 font-mono"
+                                placeholder="コードを入力してください"></textarea>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="neo-btn">
+                                <i class="fas fa-paper-plane mr-2"></i>提出する
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="submission-result" class="hidden mt-4 p-4 rounded-lg"></div>
+                </div>
 
-            <!-- 結果 -->
-            <div id="result-box" class="space-y-2 hidden">
-                <p id="result-msg" class="font-semibold"></p>
-                <pre id="result-output" class="bg-white p-3 rounded-lg whitespace-pre-wrap"></pre>
+                <!-- 提出履歴パネル -->
+                <div id="submission-history" class="hidden">
+                    <h2 class="text-xl font-semibold mb-4">提出履歴</h2>
+                    <table class="w-full bg-white/50 rounded-lg">
+                        <thead>
+                            <tr class="border-b border-slate-300">
+                                <th class="p-2 text-left">提出日時</th>
+                                <th class="p-2 text-left">言語</th>
+                                <th class="p-2 text-left">スコア</th>
+                                <th class="p-2 text-left">ステータス</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-list"></tbody>
+                    </table>
+                </div>
+
+                <!-- ウェルカムメッセージ -->
+                <div id="welcome-panel">
+                    <h2 class="text-xl font-semibold mb-4">ようこそ、<span id="welcome-name"></span>さん</h2>
+                    <p class="mb-4">左側のパネルから課題を選択して取り組みましょう。</p>
+                    <div class="bg-white/50 p-4 rounded-lg">
+                        <h3 class="font-medium mb-2">使い方</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>課題一覧から取り組みたい課題を選択</li>
+                            <li>プログラミング言語を選択してコードを記述</li>
+                            <li>「提出する」ボタンをクリックして提出</li>
+                            <li>テスト結果とスコアを確認</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <script src="student.js"></script>
 </body>
