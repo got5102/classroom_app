@@ -1,121 +1,119 @@
-// runCode.js
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
-import { exec, execSync } from 'child_process';
-
-const TMP = os.tmpdir();
-const MAX_BUFFER = 1024 * 1024; // 1 MiB
-
-// ファイル同士をバイト比較するヘルパー
-async function compareFiles(a, b) {
-  const bufA = await fs.promises.readFile(a);
-  const bufB = await fs.promises.readFile(b);
-  return bufA.equals(bufB);
-}
+const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 /**
- * 提出コードを実行し、テストケース群を評価します。
- * @param {string} code   - ソースコード
- * @param {string} language - 'python' | 'c' | 'cpp'
- * @param {Array} testcases - DB から取得した testcases.rows
- * @returns {Promise<{passed:number,totalTests:number,score:number,stdout?:string}>}
+ * 提出されたコードを実行してテスト
+ * @param {string} code - 提出されたコード
+ * @param {string} language - プログラミング言語
+ * @param {string} input - テスト入力
+ * @returns {Promise<{output: string}>} - 実行結果
  */
-export default function runCode(code, language, testcases) {
-  return new Promise((resolve) => {
-    const uid = Date.now() + '_' + Math.random().toString(36).slice(2);
-    let srcPath, binPath, cmd;
-
-    // 1) ソースファイル書き出し＆コンパイル or 直接実行コマンド設定
+async function runCode(code, language, input) {
+    // 一時ファイル用のディレクトリ
+    const tmpDir = path.join(__dirname, 'tmp');
+    if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir);
+    }
+    
+    // 一意のファイル名を生成
+    const fileId = uuidv4();
+    
     try {
-      if (language === 'python') {
-        srcPath = path.join(TMP, `sub_${uid}.py`);
-        fs.writeFileSync(srcPath, code);
-        cmd = `python3 "${srcPath}"`;
-      } else if (language === 'c') {
-        srcPath = path.join(TMP, `sub_${uid}.c`);
-        binPath = path.join(TMP, `sub_${uid}`);
-        fs.writeFileSync(srcPath, code);
-        execSync(`gcc "${srcPath}" -o "${binPath}"`, { timeout: 10000 });
-        cmd = `"${binPath}"`;
-      } else if (language === 'cpp') {
-        srcPath = path.join(TMP, `sub_${uid}.cpp`);
-        binPath = path.join(TMP, `sub_${uid}`);
-        fs.writeFileSync(srcPath, code);
-        execSync(`g++ -std=c++17 "${srcPath}" -o "${binPath}"`, { timeout: 10000 });
-        cmd = `"${binPath}"`;
-      } else {
-        throw new Error('Unsupported language');
-      }
-    } catch (compileErr) {
-      cleanup();
-      return resolve({ passed: 0, totalTests: testcases.length, score: 0, error: 'Compilation error' });
-    }
-
-    let passed = 0;
-    const total = testcases.length;
-
-    // 2) 各テストケースを非同期で実行
-    (function runTest(i) {
-      if (i >= total) {
-        // 全テスト完了
-        cleanup();
-        const score = total ? Math.round((passed / total) * 100) : 0;
-        return resolve({ passed, totalTests: total, score });
-      }
-
-      const tc = testcases[i];
-      // テキストテスト
-      if (tc.kind === 'text') {
-        exec(cmd, {
-          input: tc.input_text || '',
-          timeout: 5000,
-          maxBuffer: MAX_BUFFER
-        }, (err, out) => {
-          const stdout = (out || '').toString();
-          const ok = !err && stdout.trim() === (tc.output_text || '').trim();
-          if (ok) passed++;
-          runTest(i + 1);
-        });
-
-      // ファイルテスト
-      } else {
-        const tempOut = path.join(TMP, `out_${uid}_${i}`);
-        // 入力ファイルあり
-        if (tc.input_path) {
-          try {
-            execSync(`${cmd} < "${tc.input_path}" > "${tempOut}"`, {
-              timeout: 5000,
-              maxBuffer: MAX_BUFFER,
-              shell: true
-            });
-            compareFiles(tempOut, tc.output_path).then(eq => {
-              if (eq) passed++;
-              fs.unlinkSync(tempOut);
-              runTest(i + 1);
-            });
-          } catch {
-            runTest(i + 1);
-          }
-
-        // 標準出力比較
-        } else {
-          exec(cmd, { timeout: 5000, maxBuffer: MAX_BUFFER }, (err2, out2) => {
-            const stdout = (out2 || '').toString();
-            const ok2 = !err2 && stdout.trim() === (tc.output_text || '').trim();
-            if (ok2) passed++;
-            runTest(i + 1);
-          });
+        let filePath, command;
+        
+        // 言語に応じたファイル作成とコマンド設定
+        switch (language) {
+            case 'python':
+                filePath = path.join(tmpDir, `${fileId}.py`);
+                fs.writeFileSync(filePath, code);
+                command = `python ${filePath}`;
+                break;
+                
+            case 'c':
+                const cFilePath = path.join(tmpDir, `${fileId}.c`);
+                const cOutPath = path.join(tmpDir, fileId);
+                fs.writeFileSync(cFilePath, code);
+                
+                // コンパイル
+                await new Promise((resolve, reject) => {
+                    exec(`gcc ${cFilePath} -o ${cOutPath}`, (error) => {
+                        if (error) {
+                            reject(new Error(`Compilation error: ${error.message}`));
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+                
+                command = cOutPath;
+                break;
+                
+            case 'cpp':
+                const cppFilePath = path.join(tmpDir, `${fileId}.cpp`);
+                const cppOutPath = path.join(tmpDir, fileId);
+                fs.writeFileSync(cppFilePath, code);
+                
+                // コンパイル
+                await new Promise((resolve, reject) => {
+                    exec(`g++ ${cppFilePath} -o ${cppOutPath}`, (error) => {
+                        if (error) {
+                            reject(new Error(`Compilation error: ${error.message}`));
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+                
+                command = cppOutPath;
+                break;
+                
+            default:
+                throw new Error('Unsupported language');
         }
-      }
-    })(0);
-
-    // 3) 後片付け
-    function cleanup() {
-      try { fs.unlinkSync(srcPath); } catch {}
-      if (binPath) {
-        try { fs.unlinkSync(binPath); } catch {}
-      }
+        
+        // 入力ファイルを作成
+        const inputPath = path.join(tmpDir, `${fileId}.in`);
+        if (input) {
+            fs.writeFileSync(inputPath, input);
+        }
+        
+        // コードを実行（タイムアウト10秒）
+        const output = await new Promise((resolve, reject) => {
+            const proc = exec(`${command} < ${inputPath}`, {
+                timeout: 10000,
+                maxBuffer: 1024 * 1024 // 1MB
+            }, (error, stdout, stderr) => {
+                if (error && error.killed) {
+                    reject(new Error('Execution timeout'));
+                } else if (error) {
+                    reject(new Error(`Execution error: ${stderr}`));
+                } else {
+                    resolve(stdout);
+                }
+            });
+        });
+        
+        return { output };
+    } catch (error) {
+        return { output: `Error: ${error.message}` };
+    } finally {
+        // 一時ファイルを削除
+        const filesToDelete = [
+            path.join(tmpDir, `${fileId}.py`),
+            path.join(tmpDir, `${fileId}.c`),
+            path.join(tmpDir, `${fileId}.cpp`),
+            path.join(tmpDir, fileId),
+            path.join(tmpDir, `${fileId}.in`)
+        ];
+        
+        filesToDelete.forEach(file => {
+            if (fs.existsSync(file)) {
+                fs.unlinkSync(file);
+            }
+        });
     }
-  });
 }
+
+module.exports = runCode;
