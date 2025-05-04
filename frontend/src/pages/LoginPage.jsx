@@ -1,14 +1,12 @@
-// src/pages/LoginPage.jsx
-
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 
-function LoginPage() {
-  const [email, setEmail]     = useState('');
+export default function LoginPage() {
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName]       = useState('');
+  const [name, setName]         = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const [error, setError]     = useState(null);
+  const [error, setError]       = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,38 +15,27 @@ function LoginPage() {
     if (isSignUp) {
       // サインアップ
       const { data: { user }, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
+        email, password
       });
-
       if (signUpError) {
         setError(signUpError.message);
         return;
       }
-
       if (user) {
-        // profiles テーブルに必ずレコードを追加
+        // プロフィール登録
         const { error: profErr } = await supabase
           .from('profiles')
-          .insert({
-            id:   user.id,
-            name: name || '名無し',
-            role: 'student',
-          });
-
+          .insert({ id: user.id, name: name || '名無し', role: 'student' });
         if (profErr) {
-          console.error('profiles 挿入失敗:', profErr);
-          setError('ユーザー登録に失敗しました。再度お試しください。');
+          console.error('profiles insert failed:', profErr);
+          setError('プロフィール登録に失敗しました。');
         }
-        // 挿入成功後は自動ログインされるので、App.jsx 側でリダイレクトされます
       }
     } else {
       // ログイン
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email, password
       });
-
       if (signInError) {
         setError(signInError.message);
       }
@@ -110,5 +97,3 @@ function LoginPage() {
     </div>
   );
 }
-
-export default LoginPage;
