@@ -22,13 +22,15 @@ function LoginPage() {
                 setError(signUpError.message);
             } else if (user) {
                 // On successful sign-up, insert profile
-                await supabase.from('profiles').insert({
-                    id: user.id,
-                    name,
-                    role: 'student' // default role; adjust if needed for teachers
-                });
-                // Supabase auto-logs in the user after sign-up
+                const { error: profErr } = await supabase
+                    .from('profiles')
+                    .insert({ id: user.id, name, role: 'student' });
+                if (profErr) {
+                    console.error('profiles テーブルへの挿入に失敗:', profErr);
+                    setError('ユーザー登録に失敗しました。');
+                }
             }
+                // Supabase auto-logs in the user after sign-up
         } else {
             // Log in flow
             const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
